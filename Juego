@@ -1,0 +1,55 @@
+public class Juego {
+    private Tablero tablero;
+    private Jugador jugador1;
+    private Jugador jugador2;
+    private Jugador turnoActual;
+
+    public Juego(Jugador p1, Jugador p2, int filas, int columnas) {
+        this.jugador1 = p1;
+        this.jugador2 = p2;
+        this.tablero = new Tablero(filas, columnas);
+        tablero.inicializar();
+        this.turnoActual = jugador1;
+    }
+
+    public Tablero getTablero() {
+        return tablero;
+    }
+
+    public Jugador getTurnoActual() {
+        return turnoActual;
+    }
+
+    public void cambiarTurno() {
+        if (turnoActual == jugador1) turnoActual = jugador2;
+        else turnoActual = jugador1;
+    }
+
+    public boolean seleccionarYRevelar(int r1, int c1, int r2, int c2) {
+        String s1 = tablero.revelar(r1, c1);
+        String s2 = tablero.revelar(r2, c2);
+
+        if (s1.equals(s2)) {
+            tablero.marcarEmparejada(r1, c1);
+            tablero.marcarEmparejada(r2, c2);
+            turnoActual.sumarPunto();
+            return true;
+        } else {
+            tablero.ocultar(r1, c1);
+            tablero.ocultar(r2, c2);
+            return false;
+        }
+    }
+
+    public boolean hayParesRestantes() {
+        return tablero.contarParesRestantes() > 0;
+    }
+
+    public Jugador getJugador1() {
+        return jugador1;
+    }
+
+    public Jugador getJugador2() {
+        return jugador2;
+    }
+}
