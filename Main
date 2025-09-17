@@ -1,7 +1,4 @@
-/**
- * Principal.java
- * Programa principal que interactúa con el usuario (Scanner aquí).
- */
+
 
 import java.util.Scanner;
 
