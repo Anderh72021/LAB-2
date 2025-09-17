@@ -1,0 +1,97 @@
+import java.util.ArrayList;
+import java.util.Collections;
+
+public class Tablero {
+    private String[][] simbolos;
+    private boolean[][] emparejada;
+    private boolean[][] visible;
+    private int filas;
+    private int columnas;
+
+    public Tablero(int filas, int columnas) {
+        this.filas = filas;
+        this.columnas = columnas;
+        simbolos = new String[filas][columnas];
+        emparejada = new boolean[filas][columnas];
+        visible = new boolean[filas][columnas];
+    }
+
+    // Inicializa el tablero con pares de letras (A, B, C, ...)
+    public void inicializar() {
+        ArrayList<String> lista = new ArrayList<>();
+        // Para 4x4 necesitamos 8 pares: A-H
+        char letra = 'A';
+        int pares = (filas * columnas) / 2;
+        for (int i = 0; i < pares; i++) {
+            String s = String.valueOf((char)(letra + i));
+            lista.add(s);
+            lista.add(s);
+        }
+        Collections.shuffle(lista);
+
+        int k = 0;
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+                simbolos[i][j] = lista.get(k);
+                emparejada[i][j] = false;
+                visible[i][j] = false;
+                k++;
+            }
+        }
+    }
+
+    // Muestra el tablero en consola
+    public void mostrarParcial() {
+        System.out.println("    1  2  3  4 ");
+        for (int i = 0; i < filas; i++) {
+            System.out.print((i + 1) + "  ");
+            for (int j = 0; j < columnas; j++) {
+                if (emparejada[i][j]) {
+                    System.out.print(" " + simbolos[i][j] + " ");
+                } else if (visible[i][j]) {
+                    System.out.print(" " + simbolos[i][j] + " ");
+                } else {
+                    System.out.print(" * ");
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    public String revelar(int r, int c) {
+        visible[r][c] = true;
+        return simbolos[r][c];
+    }
+
+    public void ocultar(int r, int c) {
+        visible[r][c] = false;
+    }
+
+    public void marcarEmparejada(int r, int c) {
+        emparejada[r][c] = true;
+    }
+
+    public boolean estaEmparejada(int r, int c) {
+        return emparejada[r][c];
+    }
+
+    public boolean esValida(int r, int c) {
+        if (r < 0 || r >= filas || c < 0 || c >= columnas) return false;
+        if (emparejada[r][c]) return false;
+        return true;
+    }
+
+    public String simboloEn(int r, int c) {
+        return simbolos[r][c];
+    }
+
+    public int contarParesRestantes() {
+        int cont = 0;
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+                if (!emparejada[i][j]) cont++;
+            }
+        }
+        return cont / 2;
+    }
+}
