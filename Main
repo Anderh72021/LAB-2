@@ -1,0 +1,110 @@
+/**
+ * Principal.java
+ * Programa principal que interactúa con el usuario (Scanner aquí).
+ */
+
+import java.util.Scanner;
+
+public class Principal {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        boolean seguir = true;
+
+        System.out.println("=== Juego de Memoria 4x4 ===");
+        while (seguir) {
+            // Nombres
+            System.out.print("Nombre jugador 1: ");
+            String n1 = sc.nextLine().trim();
+            if (n1.isEmpty()) n1 = "Jugador1";
+
+            System.out.print("Nombre jugador 2: ");
+            String n2 = sc.nextLine().trim();
+            if (n2.isEmpty()) n2 = "Jugador2";
+
+            Jugador j1 = new Jugador(n1);
+            Jugador j2 = new Jugador(n2);
+            Juego juego = new Juego(j1, j2, 4, 4);
+
+            // Jugar hasta que no haya pares
+            while (juego.hayParesRestantes()) {
+                Tablero t = juego.getTablero();
+                System.out.println("\nTurno de: " + juego.getTurnoActual().getNombre());
+                t.mostrarParcial();
+
+                int r1 = -1, c1 = -1, r2 = -1, c2 = -1;
+
+                // Primera casilla
+                while (true) {
+                    try {
+                        System.out.print("Selecciona primera casilla (fila columna): ");
+                        String[] parts = sc.nextLine().trim().split("\\s+");
+                        r1 = Integer.parseInt(parts[0]) - 1;
+                        c1 = Integer.parseInt(parts[1]) - 1;
+                        if (!t.esValida(r1, c1)) {
+                            System.out.println("Casilla inválida o ya emparejada.");
+                            continue;
+                        }
+                        break;
+                    } catch (Exception ex) {
+                        System.out.println("Entrada inválida. Intenta de nuevo.");
+                    }
+                }
+
+                t.revelar(r1, c1);
+                t.mostrarParcial();
+
+                // Segunda casilla
+                while (true) {
+                    try {
+                        System.out.print("Selecciona segunda casilla (fila columna): ");
+                        String[] parts = sc.nextLine().trim().split("\\s+");
+                        r2 = Integer.parseInt(parts[0]) - 1;
+                        c2 = Integer.parseInt(parts[1]) - 1;
+                        if (r2 == r1 && c2 == c1) {
+                            System.out.println("No puedes elegir la misma casilla.");
+                            continue;
+                        }
+                        if (!t.esValida(r2, c2)) {
+                            System.out.println("Casilla inválida o ya emparejada.");
+                            continue;
+                        }
+                        break;
+                    } catch (Exception ex) {
+                        System.out.println("Entrada inválida. Intenta de nuevo.");
+                    }
+                }
+
+                boolean acierto = juego.seleccionarYRevelar(r1, c1, r2, c2);
+                t.mostrarParcial();
+                if (acierto) {
+                    System.out.println("¡Acierto! " + juego.getTurnoActual().getNombre() + " gana un punto.");
+                } else {
+                    System.out.println("No coincide. Turno pasa al otro jugador.");
+                    juego.cambiarTurno();
+                }
+            }
+
+            // Resultados
+            System.out.println("\n=== Fin de la partida ===");
+            System.out.println(juego.getJugador1().getNombre() + ": " + juego.getJugador1().getPuntos() + " pares");
+            System.out.println(juego.getJugador2().getNombre() + ": " + juego.getJugador2().getPuntos() + " pares");
+
+            if (juego.getJugador1().getPuntos() > juego.getJugador2().getPuntos()) {
+                System.out.println("Ganador: " + juego.getJugador1().getNombre());
+            } else if (juego.getJugador2().getPuntos() > juego.getJugador1().getPuntos()) {
+                System.out.println("Ganador: " + juego.getJugador2().getNombre());
+            } else {
+                System.out.println("Empate.");
+            }
+
+            System.out.print("¿Jugar otra partida? (s/n): ");
+            String resp = sc.nextLine().toLowerCase();
+            if (!resp.equals("s") && !resp.equals("si")) {
+                seguir = false;
+            }
+        }
+
+        System.out.println("Gracias por jugar.");
+        sc.close();
+    }
+}
